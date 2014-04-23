@@ -1,0 +1,26 @@
+/* $Id: structedu.css,v 1.1.4.3 2008/05/28 03:17:59 nancyw Exp $ */
+
+div.studentedu_actionbar {
+  float: right;
+  margin-top: -25px;
+}
+
+div.studentedu_actionbar_in_search {
+  float: right;
+  margin-top: -60px;
+}
+
+td.label1 {
+  width: 180px;
+}
+td.label2 {
+  width: 230px;
+}
+
+td.labeled {
+  width: 200px;
+}
+
+.studphoto{
+  position: relative;
+}   

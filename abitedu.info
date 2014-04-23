@@ -1,0 +1,6 @@
+name = Abiturient in education
+description = Ведение базы данных о абитуриентах ( + некоторая логика по сопровождению базы).
+package = NetNeb: edu
+core = 7.x
+files[] = abitedu.module
+files[] = abitedu.install

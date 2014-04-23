@@ -1,0 +1,22 @@
+<div class="studenteduinfo">
+
+ 
+ <?php
+  $studentedu = node_load($nid);
+echo "студентинфо";
+  print '<div class="clearfix"><div class="studentedu-fio"><a href="/node/'.($nid) .'">'.($studentedu->title).'</a> (<a  href="/node/'.($nid) .'">'.($studentedu->syslogin) .'</a>)';
+  
+  print '</div><div class="studentedu_actionbar">';
+    
+  
+  $buttons = module_invoke('libedu', 'getbuttons', 'studentedu', $nid);
+  foreach($buttons as $button){
+	if($button) print ' <a target="'.($button['target']).'" href="'.($button['link']).'"><img align="middle"  src="'.($button['icon']).'" alt="'.($button['title']).'" /></a>';
+  } 
+  //width="16" height="16"
+  ?>
+  
+  </div>
+  </div>
+ 
+</div>

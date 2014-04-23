@@ -1,0 +1,400 @@
+<?php
+
+function abitedu_schema() {
+  $schema['abitedu'] = array(
+    'module' => 'abitedu',
+    'description' => t('Extra node data.'),
+    'fields' => array(
+      'nid' => array(
+        'description' => t('Node identifier.'),
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'disp-width' => '10',
+      ),
+
+      
+      'syslogin' => array(
+        'description' => 'Персональный уникальный идентификатор студента, используемый как логин',
+        'type' => 'varchar',
+        'length' => '255',
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'syspassword' => array(
+        'description' => 'Пароль',
+        'type' => 'varchar',
+        'length' => '255',
+        'not null' => TRUE,
+        'default' => '',
+      ), 
+      
+      'email' => array(
+        'description' => 'Адрес електронной почты',
+        'type' => 'varchar',
+        'length' => '50',
+        'not null' => TRUE,
+        'default' => '',
+      ), 
+
+     
+      'sex' => array(
+        'description' => 'Пол студента',
+        'type' => 'varchar',
+        'length' => '2',
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'birthday' => array(
+        'description' => 'Дата рождения',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'disp-width' => '11',
+        'default' => 0,
+      ),
+      'placebirthday' => array(
+        'description' => 'Место рождения',
+        'type' => 'varchar',
+        'length' => '350',
+        'default' => '',
+      ),
+      'grajdan' => array(
+        'description' => 'Гражданство (tid)',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'disp-width' => '10',
+        'default' => 0,
+      ),
+      'dul' => array(
+        'description' => 'Документ удостоверяющий личность (tid)',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'disp-width' => '10',
+        'default' => 0,
+      ),
+      'dulserial' => array(
+        'description' => 'Серия документа удостоверяющего личность',
+        'type' => 'varchar',
+        'length' => '50',
+        'default' => '',
+      ),
+      'dulnumber' => array(
+        'description' => 'Номер документа удостоверяющего личность',
+        'type' => 'varchar',
+        'length' => '50',
+        'default' => '',
+      ),
+      'duldate' => array(
+        'description' => 'Дата выдачи документа удостоверяющего личность',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'disp-width' => '11',
+        'default' => 0,
+      ),
+      'dulplace' => array(
+        'description' => 'Кем выдан документ удостоверяющий личность',
+        'type' => 'varchar',
+        'length' => '250',
+        'default' => '',
+      ),
+      'postindex' => array(
+        'description' => 'Почтовый индекс прописки',
+        'type' => 'varchar',
+        'length' => '50',
+        'default' => '',
+      ),
+      'region' => array(
+        'description' => 'Регион прописки',
+        'type' => 'varchar',
+        'length' => '250',
+        'default' => '',
+      ),
+      'city' => array(
+        'description' => 'Город прописки',
+        'type' => 'varchar',
+        'length' => '300',
+        'default' => '',
+      ),
+      'cityregion' => array(
+        'description' => 'Район города прописки (tid)',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'disp-width' => '10',
+        'default' => 0,
+      ),
+      'street' => array(
+        'description' => 'Улица прописки',
+        'type' => 'varchar',
+        'length' => '70',
+        'default' => '',
+      ),
+      'haus' => array(
+        'description' => 'Номер дома прописки',
+        'type' => 'varchar',
+        'length' => '10',
+        'default' => '',
+      ),
+      'telephon' => array(
+        'description' => 'Домашний телефон',
+        'type' => 'varchar',
+        'length' => '50',
+        'default' => '',
+      ),
+      'outype' => array(
+        'description' => 'Тип предыдущего учебного заведения',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'disp-width' => '10',
+        'default' => 0,
+      ),
+      'ouyear' => array(
+        'description' => 'Год окончания предыдущего учебного заведения',
+        'type' => 'varchar',
+        'length' => '4',
+        'default' => '',
+      ),
+      'ounumber' => array(
+        'description' => 'Номер (наименование) предыдущего учебного заведения',
+        'type' => 'varchar',
+        'length' => '250',
+        'default' => '',
+      ),
+      'oubase' => array(
+        'description' => 'На базе 9 или 11 класса закончил предыдущее учебное заведение',
+        'type' => 'varchar',
+        'length' => '2',
+        'default' => '',
+      ),
+      'outypedoc' => array(
+        'description' => 'Тип документа об образовании',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'disp-width' => '10',
+        'default' => 0,
+      ),
+      'outypedocserial' => array(
+        'description' => 'Серия документа об образовании',
+        'type' => 'varchar',
+        'length' => '50',
+        'default' => '',
+      ),
+      'outypedocnumber' => array(
+        'description' => 'Номер документа об образовании',
+        'type' => 'varchar',
+        'length' => '250',
+        'default' => '',
+      ),
+      'medal' => array(
+        'description' => 'Аттестат или диплом с отличаем?',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'disp-width' => '10',
+        'default' => 0,
+      ),
+      'lang' => array(
+        'description' => 'Иностранный язык (tid)',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'disp-width' => '10',
+        'default' => 0,
+      ),
+      'olimp' => array(
+        'description' => 'Участие в олимпиадах',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'disp-width' => '10',
+        'default' => 0,
+      ),
+      'ousredball' => array(
+        'description' => 'Средний бал аттестата',
+        'type' => 'float',
+        'disp-width' => '11',
+        'default' => 0,
+      ),
+      
+      
+      'egeball1' => array(
+        'description' => 'Балл',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'disp-width' => '10',
+        'default' => 0,
+      ),
+      'egenum1' => array(
+        'description' => 'Наименование и номер документа',
+        'type' => 'varchar',
+        'length' => '50',
+        'default' => '',
+      ),
+      'egeyear1' => array(
+        'description' => 'Год выдачи документа',
+        'type' => 'varchar',
+        'length' => '4',
+        'default' => '',
+      ),
+      'egecode2' => array(
+        'description' => 'Предмет 2 (tid)',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'disp-width' => '10',
+        'default' => 0,
+      ),
+      'egeball2' => array(
+        'description' => 'Балл',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'disp-width' => '10',
+        'default' => 0,
+      ),
+      'egenum2' => array(
+        'description' => 'Наименование и номер документа',
+        'type' => 'varchar',
+        'length' => '50',
+        'default' => '',
+      ),
+      'egeyear2' => array(
+        'description' => 'Год выдачи документа',
+        'type' => 'varchar',
+        'length' => '4',
+        'default' => '',
+      ),
+      'egecode3' => array(
+        'description' => 'Предмет 1 (tid)',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'disp-width' => '10',
+        'default' => 0,
+      ),
+      'egeball3' => array(
+        'description' => 'Балл',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'disp-width' => '10',
+        'default' => 0,
+      ),
+      'egenum3' => array(
+        'description' => 'Наименование и номер документа',
+        'type' => 'varchar',
+        'length' => '50',
+        'default' => '',
+      ),
+      'egeyear3' => array(
+        'description' => 'Год выдачи документа',
+        'type' => 'varchar',
+        'length' => '4',
+        'default' => '',
+      ),
+      
+    
+      
+      'codespec' => array(
+        'description' => 'Желаемая специальность',
+        'type' => 'varchar',
+        'length' => '10',
+        'default' => '',
+      ),
+      'sredobuch' => array(
+        'description' => 'Вредства обучения',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'disp-width' => '10',
+        'default' => 0,
+      ),
+
+
+      'podgotovcurs' => array(
+        'description' => 'Подготовительные курсы',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'disp-width' => '10',
+        'default' => 0,
+      ),
+      'lgoty' => array(
+        'description' => 'Льготы',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'disp-width' => '10',
+        'default' => 0,
+      ),
+      'obshaga' => array(
+        'description' => 'В общежитии нуждаюсь',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'disp-width' => '10',
+        'default' => 0,
+      ),
+      'sredobrazovvpervie' => array(
+        'description' => 'Среднее обр. впервые?',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'disp-width' => '10',
+        'default' => 0,
+      ),
+      'povishuroven' => array(
+        'description' => 'Уровень образования',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'disp-width' => '10',
+        'default' => 0,
+      ),
+      
+      'mamfio' => array(
+        'description' => 'ФИО матери',
+        'type' => 'varchar',
+        'length' => '250',
+        'default' => '',
+      ),
+      'papfio' => array(
+        'description' => 'ФИО отца',
+        'type' => 'varchar',
+        'length' => '250',
+        'default' => '',
+      ),
+      'mamdata' => array(
+        'description' => 'Данные о матери',
+        'type' => 'varchar',
+        'length' => '250',
+        'default' => '',
+      ),
+      'papdata' => array(
+        'description' => 'Данные об отце',
+        'type' => 'varchar',
+        'length' => '250',
+        'default' => '',
+      ),
+      'mamsocstatus' => array(
+        'description' => 'Социальный статус матери (tid)',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'disp-width' => '10',
+        'default' => 0,
+      ),
+      'papsocstatus' => array(
+        'description' => 'Социальный статус отца (tid)',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'disp-width' => '10',
+        'default' => 0,
+      ),
+      'mydopdata' => array(
+        'description' => 'Дополнительные данные о студенте',
+        'type' => 'varchar',
+        'length' => '250',
+        'default' => '',
+      ),
+      
+    ),    
+    'primary key' => array('nid'),
+  );
+  return $schema;
+}  
+
+
+
+
+
+
+function abitedu_uninstall() {
+ drupal_uninstall_schema('abitedu');
+
+}

@@ -1,0 +1,689 @@
+<?php
+
+function abitedu_node_info() {
+  return array(
+    'abitedu' => array(
+      'name' => 'абитуриент',
+      'base' => 'abitedu',
+      'description' => 'Добавить абитуриента или абитуриента.',
+      'has_title' => TRUE,
+      'has_body' => FALSE,
+    ),
+  );
+}
+
+
+function abitedu_in_struct($abitedu) {
+
+	$tmp=$abitedu;
+
+while ($tmp->parentnid) {
+	
+		if (($tmp->nid == variable_get('abitedu_ochn')) || ($tmp->nid == variable_get('abitedu_zaochn'))) {  # очка/заочка
+		
+			$tst = $tmp->nid;
+				
+			break;
+	}	
+	else {
+	
+		$tmp = node_load($tmp->parentnid);
+
+	}
+}
+
+#drupal_set_message(print_r($tst, TRUE));
+		return $tst;
+		
+}
+
+
+function abitedu_rukuid_struct($abitedu) {
+
+	$tmp = node_load($abitedu->parentnid);  # структура
+	$ruknids = array();
+	
+	while ($tmp->parentnid) {
+		
+		if ($tmp->parentnid <> 0) {
+		
+			$tmp = node_load($tmp->parentnid);
+			$ruknids[$tmp->rukuid] = $tmp->sname;
+			
+		
+				#field_view_field('user', user_load($tmp->rukuid), 'field_fio', array('label' => 'hidden'));
+			 # drupal_set_message(print_r(user_load($tmp->rukuid)->field_fio, TRUE));
+		}
+	}
+	return $ruknids;
+}
+
+
+
+function abitedu_permission() {
+  return array(
+
+    'abiturient' => array(
+      'title' => 'Права на всякую муть для абитуриентов(анонимов)',
+    ),
+    
+    'pk' => array(
+      'title' => 'Права для авторизованных пользователей, которым судьбой предначертано обрабатывать  данные абитуриентов)',
+    ), 
+    
+  );
+}
+
+function abitedu_node_access($node, $op, $account) {  
+  if ($node->type == 'abitedu') {
+    switch ($op) {
+      case 'view':
+        if (user_access('abiturient', $account)) {
+          return NODE_ACCESS_ALLOW;
+        }
+      break;
+      case 'create':
+        if (user_access('abiturient', $account)) {
+          return NODE_ACCESS_ALLOW;
+        }
+      break;
+      case 'update':
+      case 'delete':
+        if (user_access('abiturient', $account)) {
+          return NODE_ACCESS_ALLOW;
+        }
+      break;
+    }
+    return NODE_ACCESS_DENY;
+    //return NODE_ACCESS_IGNORE;
+  }
+}
+
+function abitedu_menu() {
+  $items = array();
+
+	$items['coderep/%'] = array(
+		'title' => 'Отчет', 
+		'page callback' => 'abitedu_coderep', 
+		'access arguments' => array('abitedu_abiturint_access'), 
+		'access callback' =>TRUE,
+		'page arguments' => array(1),
+		'type' => MENU_LOCAL_TASK,		
+	);
+  
+	$items['profile'] = array(
+		'title' => 'Анкета', 
+		'page callback' => 'drupal_get_form',
+    
+		'page arguments' => array('abitedu_profile_form'),
+		'access callback' =>TRUE,
+		'access arguments' => array('abitedu_abiturint_access'), 
+		'type' => MENU_CALLBACK
+	);
+
+
+  $items['node/%node/extinfo'] = array(
+    'title' => 'Паспорт',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('abitedu_editextinfo_form',1),
+    'access callback' => 'abitedu_abiturint_access',
+    'file' => 'abitedu.edit.inc',
+    'access arguments' => array(1),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 100,
+  );
+  
+  $items['node/%node/edu'] = array(
+    'title' => 'Образование',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('abitedu_editeduinfo_form',1),
+    'access callback' => 'abitedu_abiturint_access',
+    'file' => 'abitedu.edit.inc',
+    'access arguments' => array(1),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 110,
+  );
+  
+  $items['node/%node/ege'] = array(
+    'title' => 'Егэ',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('abitedu_editegeinfo_form',1),
+    'access callback' => 'abitedu_abiturint_access',
+    'access arguments' => array(1),
+    'file' => 'abitedu.edit.inc',
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 120,
+  );
+  
+  $items['node/%node/colleg'] = array(
+    'title' => 'Поступление',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('abitedu_editcolleginfo_form',1),
+    'access callback' => 'abitedu_abiturint_access',
+    'access arguments' => array(1),
+    'file' => 'abitedu.edit.inc',
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 130,
+  );
+  
+  $items['node/%node/etc'] = array(
+    'title' => 'Разное',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('abitedu_editetcinfo_form',1),
+    'access callback' => 'abitedu_edit_access',
+    'access arguments' => array(1),
+    'file' => 'abitedu.edit.inc',
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 140,
+  );
+  
+  $items['abitedu'] = array(
+    'title' => 'абитуриенты',
+    'access arguments' => array('access abitedu'),
+    'page callback' => 'abitedu_abitedu',
+  );
+  
+
+  
+  $items['admin/config/system/abitedu'] = array(
+    'title' => 'Работа со абитуриентами',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('abitedu_settings_form'),
+    'access arguments' => array('administer abitedu'),
+  );
+
+  module_invoke('elibfan_buttons', 'regbutton', 'abitedu', 'abitedu_extinfo', 'abitedu_getlogo');
+  module_invoke('elibfan_buttons', 'regbutton', 'abitedu', 'abitedu_extinfo', 'abitedu_spedu');
+  module_invoke('elibfan_buttons', 'regbutton', 'abitedu', 'abitedu_extinfo', 'abitedu_order'); 
+  
+  
+  return $items;
+}
+
+
+function abitedu_parking () {
+  return 'ok';
+}
+
+
+function abitedu_coderep($code) {
+  
+  elibfan_libinclude('mpdf', 'mpdf.php');
+    $mpdf = new mPDF('win-1251', 'A4', 0, '', 9, 15,  16, 16, 9, 9);
+    $mpdf->SetDisplayMode('fullpage');
+ 
+    $html = "<div style='font-size: 30pt;color: gray;'>Ваш индивидуальный код:  ".$code.".</div<br>Что бы  проследить статус вашей анкеты, вам необходимо зайти на страницу <u>systec.ru/online</u><, и воспользоваться блоком находящимся  в левой колонке. Вам доступна так же возможность изменения и уточнения данных своей анкеты/div>";
+    $mpdf->WriteHtml($html);
+		$mpdf->Output('dogovor.pdf', 'D');
+    
+}
+   
+
+function abitedu_init() {
+	drupal_add_css(drupal_get_path('module', 'abitedu') .'/abitedu.css');
+	drupal_add_js(drupal_get_path('module', 'abitedu') .'/abitedu.js');
+	drupal_add_css(drupal_get_path('module', 'abitedu') .'templ/abitedu.rep.css');
+}
+
+function abitedu_node_view($node, $view_mode, $langcode) {
+  if ($node->type == 'abitedu') {
+    
+    $node->content['links'] = array();
+    
+    if ($view_mode == 'full') {
+
+    $node->content['abitedu_extinfo'] = array(
+          '#markup' => module_invoke('elibfan_buttons', 'getbuttons', 'abitedu_extinfo', $node->nid, 'imgbar') . theme('abitedu_extinfo', array('nid' => $node->nid)),
+          '#weight' => 1,
+        );
+  /*      
+    $node->content['abitedu_show_log'] = array(
+          '#markup' => module_invoke('abitedu_show_log/'.$node/nid),
+          '#weight' => 1,
+        );       */
+
+    }
+    
+    if ($view_mode == 'teaser') {
+      $node->content['abitedu_info'] = array(
+        '#markup' => theme('abitedu_info', array('nid' => $node->nid)),
+        '#weight' => 2,
+      );
+    }
+  }
+  
+  if ($node->type == 'groupedu') { 
+    if($view_mode == 'full') {
+      $query = db_select('abitedu', 's')
+         ->condition('parentnid', $node->nid)
+         ->fields('s', array('nid'))
+         ->orderBy('lname', 'ASC')
+         ->orderBy('fname', 'ASC')
+         ->orderBy('sname', 'ASC');
+         //->extend('PagerDefault')
+         //->limit(10);
+      $arr = array();
+      foreach($query->execute() as $row) {
+        $arr[$row->nid] = $row->nid;
+      }
+      $nodes = node_load_multiple($arr);
+      $build = node_view_multiple($nodes);
+      
+      //$build['pager'] = array('#theme' => 'pager');
+      //$build['pager'] = array(
+      //  '#theme' => 'pager',
+      //);
+      
+      //drupal_set_message(print_r(theme('pager'), TRUE));
+      
+      $node->content['abitedu_extinfo'] = array(
+        '#markup' => drupal_render($build), //. 'ggggg' .theme('pager'),
+        '#weight' => 10, 
+      );
+    }
+  }
+}
+
+function abitedu_node_delete($node) {
+  if ($node->type == 'groupedu') {
+    $nodes = db_select('abitedu', 's')
+        ->condition('parentnid', $node->nid)
+        ->fields('s', array('nid'))
+        ->execute()
+        ->fetchCol();
+    node_delete_multiple($nodes);
+  }
+}
+
+function abitedu_node_update_index($abitedu) {
+  $text = ($abitedu->lname) . ' ' . ($abitedu->fname) . ' ' . ($abitedu->sname) . ' ' . ($abitedu->regnum) . ' ' . ($abitedu->syslogin);
+  
+  return $text;
+}
+
+/*
+function abitedu_nodeapi(&$node, $op, $teaser = false, $page = false) {
+  $text = '';
+  switch ($op) {    
+    case 'delete':
+      if ($node->type == 'groupedu') {
+        $result = db_query('SELECT nid FROM {abitedu} WHERE parentnid = %d', $node->nid);
+        while ( $abitedu = db_fetch_object($result) ) {
+          node_delete($abitedu->nid);
+        }
+      }  
+    break;
+    
+    case 'update index':
+    if ($node->type == 'abitedu') { 
+			$q = db_query(
+			'SELECT * FROM {node} n LEFT JOIN {abitedu} a ON n.nid = a.nid '.
+			'WHERE n.nid = %d', $node->nid);
+			if ($abitedu = db_fetch_object($q)) {
+				$text = ($abitedu->lname) . ' ' . ($abitedu->fname) . ' ' . ($abitedu->sname) . ' ' . ($abitedu->regnum) . ' ' . ($abitedu->syslogin);
+			}
+		}
+	break;
+  
+	case 'search result':
+    if ($node->type == 'abitedu') {
+      $text = theme('abitedu_info', $node->nid);
+    }	
+	break;
+  
+  }
+  
+  return $text;
+}
+*/
+
+function abitedu_theme($existing, $type, $theme, $path) {
+  return array(
+    'abitedu_info' => array(
+      'template' => 'abitedu-info',
+      'variables' => array(
+        'nid'	=> null,
+      ),
+    ),
+    'abitedu_extinfo' => array(
+      'template' => 'abitedu-extinfo',
+      'variables' => array(
+        'nid'	=> null,
+      ),
+    ),
+    'abitedu_liteinfo' => array(
+      'template' => 'abitedu-liteinfo',
+      'variables' => array(
+        'nid'	=> null,
+      ),
+    ),
+    
+    
+  );
+}
+
+
+function abitedu_settings_form() {
+
+    $allstruct = array();
+    $vocabularies = taxonomy_get_vocabularies();  
+    foreach($vocabularies as $vid => $vocabulary){
+      $allstruct[$vocabulary->vid] = $vocabulary->name;
+    }
+		
+    
+    
+		$form['abitedu_grajdan'] = array(
+      '#type' => 'select',
+			'#title' => 'Гражданство',
+			'#options' => $allstruct,
+			'#default_value' => variable_get('abitedu_grajdan', '0'),
+		); 
+
+		$form['abitedu_dul'] = array(
+      '#type' => 'select',
+			'#title' => 'Типы документа удостоверяющего личность',
+			'#options' => $allstruct,
+			'#default_value' => variable_get('abitedu_dul', '0'),
+		);
+
+		
+
+		$form['abitedu_outype'] = array(
+      '#type' => 'select',
+			'#title' => 'Типы учебных заведений',
+			'#options' => $allstruct,
+			'#default_value' => variable_get('abitedu_outype', '0'),
+		);
+		
+		$form['abitedu_lgotytype'] = array(
+      '#type' => 'select',
+			'#title' => 'Наименования льгот',
+			'#options' => $allstruct,
+			'#default_value' => variable_get('abitedu_lgotytype', '0'),
+		);
+		
+		$form['abitedu_lang'] = array(
+      '#type' => 'select',
+			'#title' => 'Изучаемые языки',
+			'#options' => $allstruct,
+			'#default_value' => variable_get('abitedu_lang', '0'),
+		);
+		
+	
+		
+		$form['abitedu_ege'] = array(
+      '#type' => 'select',
+			'#title' => 'Список предметов ЕГЭ',
+			'#options' => $allstruct,
+			'#default_value' => variable_get('abitedu_ege', '0'),
+		);
+    
+    
+		
+  return system_settings_form($form);
+}
+
+function abitedu_form($node, &$form_state) {
+  
+  global $user;
+  
+  drupal_add_js(drupal_get_path('module', 'elibfan') .'/libapi/elibfan_names/Name.js');
+  
+  if (!isset($node->regnum)) $node->regnum = 0;
+  if (!isset($node->cheked)) $node->cheked = 0;
+  //if (!isset($node->abiturpotok)) $node->abiturpotok = 0;
+  if (!isset($node->abiturexamgroup)) $node->abiturexamgroup = 0;
+  if (!isset($node->syslogin)) $node->syslogin = '';
+  if (!isset($node->syspassword)) $node->syspassword = '';
+  if (!isset($node->parentnid)) $node->parentnid = variable_get('abitedu_lastgroupnid' . $user->uid, NULL);
+
+  if (!isset($node->sex)) $node->sex = 0;
+  if (!isset($node->zachislen)) $node->zachislen = 0;
+  
+if (!isset($node->title)) $node->title = "Анкета";
+
+
+
+  $form['code'] = array(
+    '#type' => 'hidden',
+    '#title' => 'Ваш код',
+
+
+
+    '#weight' => 4,
+  );
+
+
+  return $form;
+}
+
+function abitedu_load($nodes) {
+  $result = db_query('SELECT * FROM {abitedu} WHERE nid IN (:nids)', array(':nids' => array_keys($nodes)));
+  
+  foreach ($result as $record) {
+    foreach ($record as $fieldname => $field) {
+      $nodes[$record->nid]->$fieldname = $field;
+    }
+  }
+}
+
+
+function abitedu_insert($node) {
+  global $user;
+  
+	
+  
+  db_insert('abitedu')
+    ->fields(array(
+    		'nid' => $node->nid,	
+      'code' => $node->created,
+      'status' => 0,
+     
+      'syslogin' => '',
+      'syspassword' => 0,
+      
+    ))
+    ->execute();
+ 
+  $_SESSION['abitedu_newnid'] = $node->nid; //сохраняем нид толькочто созданного абитуриента, для разрешения доступа к его дополнительным данным пока сессия не закрыта
+  variable_set('abitedu_lastgroupnid' . $user->uid, $node->parentnid); //сохраняем нид группы, с которой недавно работали, для упращения набора абитуриентов пока сессия не закрыта
+  
+  drupal_goto('node/' . $node->nid . '/extinfo');
+} 
+
+function abitedu_update($node) {
+  //в апдейте не надо обновлять поле логина, т.к. оно заполняется только один раз при создании
+  db_update('abitedu')
+    ->fields(array(
+    
+      'code' => $node->created,
+
+      'syspassword' => '',
+      'parentnid' => 0,
+      
+    ))
+    ->condition('nid', $node->nid)
+    ->execute();
+    
+    $_SESSION['abitedu_lastgroupnid'] = $node->parentnid; //сохраняем нид группы, с которой недавно работали, для упращения набора абитуриентов пока сессия не закрыта
+} 
+
+
+
+function abitedu_abiturint_access($node) {
+  if ($node->type == 'abitedu') {
+    if (user_access('abiturient')) return TRUE;
+  }  
+  return FALSE;
+}
+
+
+
+function abitedu_pk_access($node) {
+  if ($node->type == 'abitedu') {
+    if (user_access('pk')) return TRUE;
+  }  
+  return FALSE;
+}
+
+
+
+function abitedu_getbutton($idbutton, $nid) {
+	if (user_access('create abitedu')) {
+    switch($idbutton){      
+      case 'abitedu_getlogo':
+        $button = array();
+        $button['options'] = array(
+          'attributes' => array(
+            'title' => 'Сделать фотоснимок абитуриента',
+          ),
+          'html' => 'true',
+        );
+        $button['path'] = 'camputin/shotform/' . $nid;
+        $button['text'] = 'Сфоткать';
+        $button['imgoptstr'] = '';
+        $button['imgpath'] = '/' . drupal_get_path('module', 'abitedu') . '/icon/getshot.png';
+      return $button;
+     
+     
+   case 'abitedu_spedu':
+        $button = array();
+        $button['options'] = array(
+          'attributes' => array(
+            'title' => 'Печатать справку об обучении',
+          ),
+          'html' => 'true',
+        );
+        $button['path'] = 'potreb/' . $nid;
+        $button['text'] = 'Cправка об обучении';
+        $button['imgoptstr'] = '';
+        $button['imgpath'] = '/' . drupal_get_path('module', 'incomingedu') . '/img/zayav.png';
+      return $button; 
+        
+      
+    }
+  }
+
+
+
+  return 0;
+}
+
+function abitedu_search_info() {
+  return array(
+    'title' => 'абитуриент', 
+    
+  );
+}
+
+function abitedu_search_execute($keys = NULL, $conditions = NULL) {
+  if (!$keys) {
+    $keys = '';
+  }
+  
+  $finded = array();
+  $query = db_select('node', 'n')
+    ->condition('n.type', 'abitedu')
+    ->condition('n.title', db_like($keys) . '%', 'LIKE')
+    ->fields('n', array('title', 'nid'))
+    ->orderBy('title');
+  foreach ($query->execute() as $row) {
+    $out = '';
+    $abitedu = node_load($row->nid);
+    $out .= '[<a  href="/node/'.($row->nidd) .'">'.($abitedu->syslogin) .'</a>] ['.l('Группа','node/'.$abitedu->parentnid) .']';
+    
+    $out .= '<div class="abitedu_actionbar_in_search">';
+    $out .= module_invoke('elibfan_buttons', 'getbuttons', 'abitedu', $row->nid, 'imgbar');
+    $out .= '</div>';
+    
+    $finded[] = array(
+      'link' => url('node/' . $row->nid),
+      'type' => 'Dummy result type',
+      'title' => $row->title,
+      'snippet' => $out,
+    );
+  }
+  
+  return $finded;
+}
+
+
+function reg_pric() {
+
+
+}
+
+
+
+function abitedu_block_info() {    
+          
+  $blocks['look_abitedu'] = array(
+    'info' => 'Проверка состояния анкеты_ABITEDU', 
+    'cache' => DRUPAL_NO_CACHE,
+	'title' => 'Проверить анкету',
+  );
+  
+  return $blocks;
+}
+
+
+function abitedu_profile_form($form, &$form_state) {
+global $base_url;
+	$form['id'] = array(  
+		'#type' => 'textfield',       
+		'#prefix'=>"<div class='container-inline'>",
+		'#title' => t('Номер анкеты'),
+		'#size' => 25,
+		#'#required'=>TRUE,	
+	);
+			
+	$form['submit'] = array(
+		'#type' => 'submit',
+		'#value' => 'Дальше',
+		'#suffix' =>'</div>',	
+	);	
+ 
+$s1="<h3><a href=http://www.sustec.ru/node/add/abitedu>Подать заявление</a></h3>";
+$s="<a href=http://www.sustec.ru/node/add/dirquestion>Обратная связь</a>";
+
+http://www.sustec.ru/online#overlay=node/add/abitedu
+#$s='<a href="mailto: jane@sustec.ru">Обратная связь</a>';
+
+	$form['#suffix'] = $s1."".$s;
+return $form;
+}
+
+
+function abitedu_profile_form_submit($form_id, &$form_state) {
+global $base_url;
+
+	$result = db_select('abitedu', 'a')
+			->fields('a', 
+				array('nid'))
+      ->condition('code', $form_state['values']['id'], '=')
+			->execute()
+			->FetchField();
+      	
+      drupal_set_message($result);
+      
+$id_zak=$form_state['values']['id'];
+
+$form_state['redirect']=$base_url.'/node/'.$result;	
+
+}
+
+function abitedu_block_view($delta = '') {  
+   
+
+  $block = array();
+  switch ($delta) {
+	case 'look_abitedu':
+    $block['subject'] = t('Это наврно будет заголовок:<br>'); # это ни разу не заголовок =( 
+	$block['content'] = drupal_get_form('abitedu_profile_form');
+break;
+}
+  return $block;
+}
+
+
